@@ -23,8 +23,8 @@ app.use(cors());
 app.post('/token', (req, res) => {
     const user = req.body.user || req.query.user
 
-    if (user === manifest.partner.user) {
-        var token = jwt.sign({user: user}, manifest.partner.secret, {
+    if (user === manifest.meta.user) {
+        var token = jwt.sign({user: user}, manifest.meta.secret, {
             expiresIn: 60*60*24*60
         })
 
@@ -40,31 +40,50 @@ app.post('/token', (req, res) => {
 
 app.post('/greeting', verifyToken, (req, res) => {
     const sid = req.body.sid || req.query.sid;
+    const robotId = req.body.bot_id;
+    const reportDate = req.body.report_date;
+    const condition = req.body.condition;
+
+    // user payload
     const user = req.body.user;
+    // payment payload
+    const payment = user.payment;
+    // accident payload
+    const accident = user.accident;
 
-    const id = user.id;
-    const name = user.name;
-    const service = user.service;
-    const date = user.date;
+    console.log(JSON.stringify(req.body, null, 2));
 
-    if (!user) {
-        return res.json({ success: false, message: 'user no given.' });
+    if (!robotId || !reportDate || !condition) {
+        return res.json({ success: false, message: 'parameters is not completed, please check api document.' });
     }
 
-    if (!id || !name || 
-        !service || !date) {
-        return res.json({ success: false, message: 'user payload is not completed.' });
+    if (!user) {
+        return res.json({ success: false, message: 'user payload no given.' });
     }
 
     if (!sid) {
         return res.json({ success: false, message: 'session id no given.' });
     }
 
+    if (!user.id || !user.name || !user.car_id) {
+        return res.json({ success: false, message: 'user payload is not completed.' });
+    }
+
+    if (!payment || !payment.date || !payment.TCI || !payment.VCI) {
+        return res.json({ success: false, message: 'payment payload is not completed.' });
+    }
+
+    if (!accident || !accident.date || !accident.place || !accident.name) {
+        return res.json({ success: false, message: 'accident payload is not completed.' });
+    }
+
+
     Dialog.greeting({
-        id: id,
-        name: name,
-        date: date,
-        service: service
+        sid: sid,
+        robotId: robotId,
+        reportDate: reportDate,
+        condition: condition,
+        user: user
     }, sid).then( (reply) => {
         return res.json({ success: true, sid: sid, data: reply });
     }).catch( (reply) => {
@@ -92,11 +111,10 @@ app.post('/talk', verifyToken, (req, res) => {
 
 // middleware to verify incoming token
 function verifyToken(req, res, next) {
-    console.log(req.body)
     const token = req.body.token || req.query.token
 
     if (token) {
-        jwt.verify(token, manifest.partner.secret, function (err, decode) {
+        jwt.verify(token, manifest.meta.secret, function (err, decode) {
             if (err) {
                 return res.json({success: false, message: 'Failed to authenticate token.'})
             } else {

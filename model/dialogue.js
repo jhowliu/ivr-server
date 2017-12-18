@@ -5,18 +5,30 @@ const manifest = requireDir('../manifest');
 
 const Net = require('./networks');
 
-greeting = (user, sid) => {
+greeting = (meta, sid) => {
     let options = Net.buildOpt('GET', manifest.services.apis.sunshine.host);
     let payload = Net.buildDiagObj();
-    
+   
     payload.appid = manifest.vendor.huaan.appid;
     payload.session = sid;
-    payload.PersonName = user.name;
-    payload.IDNo = user.id;
-    payload.ServiceType = user.service;
-    payload.Date = user.date;
+    payload.Q3Condition = meta.condition;
+    payload.OpNo = meta.robotId;
+    payload.ReportDate = meta.reportDate;
+    // user
+    payload.IDNo = meta.user.id;
+    payload.CarNo = meta.user.car_id;
+    payload.PersonName = meta.user.name;
+    // accident
+    payload.AccExp = meta.user.accident.name;
+    payload.Date = meta.user.accident.date;
+    payload.Place = meta.user.accident.place;
+    // payment
+    payload.PayDate = meta.user.payment.date;
+    payload.JQPayment = meta.user.payment.TCI;
+    payload.CIPayment = meta.user.payment.VCI;
 
     options.qs = payload;
+    console.log(JSON.stringify(payload, null, 2));
 
     return new Promise( (resolve, reject) => {
         Net.invokeApi(options, (res, body) => {
@@ -54,7 +66,7 @@ talk = (text, sid) => {
 
             let reply = _buildReply();
 
-            if (body) {
+            if (res && res.statusCode == 200 && body) {
                 reply.state = body.dialogue_state;
                 reply.text = body.dialogueReply;
                 resolve(reply);
