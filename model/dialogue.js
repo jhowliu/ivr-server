@@ -28,7 +28,6 @@ greeting = (meta, sid) => {
     payload.CIPayment = meta.user.payment.VCI;
 
     options.qs = payload;
-    console.log(JSON.stringify(payload, null, 2));
 
     return new Promise( (resolve, reject) => {
         Net.invokeApi(options, (res, body) => {
