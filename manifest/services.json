@@ -1,0 +1,7 @@
+{
+    "apis": {
+        "sunshine": {
+            "host": "http://192.168.10.108:3124/new_dialogue_control"
+        }
+    }
+}

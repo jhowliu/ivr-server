@@ -1,0 +1,6 @@
+{
+    "app": {
+        "name": "LingBot",
+        "port": 3357
+    }
+}
