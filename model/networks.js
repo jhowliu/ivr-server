@@ -29,6 +29,21 @@ module.exports.buildOpt = function (method, host, json=true) {
     return options
 }
 
+// session, appid are required
+module.exports.buildDiagObj = function() {
+    return {
+        q: undefined,
+        session: undefined,
+        appid: undefined,
+        PersonName: undefined,
+        IDNo: undefined,
+        ServiceType: undefined,
+        Date: undefined,
+    }
+}
+
+/* Baidu */
+/*
 module.exports.buildAuthObj = function () {
     return {
         grant_type: 'client_credentials',
@@ -48,18 +63,6 @@ module.exports.buildTextObj = function (text, token) {
     }
 }
 
-// session, appid are required
-module.exports.buildDiagObj = function() {
-    return {
-        q: undefined,
-        session: undefined,
-        appid: undefined,
-        PersonName: undefined,
-        IDNo: undefined,
-        ServiceType: undefined,
-        Date: undefined,
-    }
-}
 
 module.exports.buildVoiceObj = function (filename, format, rate, token) {
     const buffer = utils.getFileInBuffer(filename); // return buffer in bytes
@@ -89,3 +92,4 @@ module.exports.sendCallback = function (sid, binary, callbackURL, callback) {
         callback(res, body);
     });
 }
+*/
