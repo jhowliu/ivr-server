@@ -1,16 +1,15 @@
-const path = require('path');
-const fs = require('fs');
+import fs from 'fs';
+import path from 'path';
 
-let spawn = require('child_process').spawn;
+import ChildProcessPromise from 'child-process-es6-promise';
 
-
-module.exports.generateRandomString = function () {
+export const generateRandomString = () => {
     return (Math.random() * new Date().getTime()).toString(32).replace( /\./g , '');
 }
 
 // Use for voice recognize 
 // Read audio from local
-module.exports.getFileInBuffer = function (filename, folder='./audio') {
+export const getFileInBuffer = (filename, folder='./audio') => {
     const file = path.resolve(folder, filename);
     const buf = fs.readFileSync(file);
     console.log(buf.length);
@@ -20,7 +19,7 @@ module.exports.getFileInBuffer = function (filename, folder='./audio') {
 
 
 // Write audio into local
-module.exports.writeAudio = function (buffer, filename, callback) {
+export const constwriteAudio = (buffer, filename, callback) => {
     const file = path.resolve('./audio', filename);
 
     fs.writeFile(file, buffer,function(err) {
@@ -29,7 +28,7 @@ module.exports.writeAudio = function (buffer, filename, callback) {
     });
 }
 
-module.exports.convertAudio = function (filename, rate, callback) {
+export const convertAudio = function (filename, rate, callback) {
     const cmd = '/usr/bin/ffmpeg'
 
     const args = [
@@ -42,10 +41,7 @@ module.exports.convertAudio = function (filename, rate, callback) {
         path.resolve('./audio', filename)
    ]
 
-    let proc = spawn(cmd, args);
-
-    proc.on('close', function() {
-        console.log('finished');
-        callback();
-    })
+    ChildProcessPromise.spawn(cmd, args)
+        .then( () => console.log('finished'))
+        .catch( err => console.log(err.toString()));
 }

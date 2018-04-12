@@ -1,20 +1,19 @@
-const request = require('requestretry');
-const requireDir = require('require-dir');
+import Request from 'requestretry'
+import RequireDir from 'require-dir';
 
-const utils = require('./utils');
-const baidu = require('./baidu');
+import { getFileInBuffer } from './utils';
 
-let manifest = requireDir('../manifest');
+const manifest = RequireDir('../manifest');
 
 // Invoke request
-module.exports.invokeApi = function (requestOpts, callback) {
-    request(requestOpts, function(err, res, body) {
+export const invokeApi = (requestOpts, callback) => {
+    Request(requestOpts, function(err, res, body) {
         callback(res, body);
     });
 }
 
 // build options for requests
-module.exports.buildOpt = function (method, host, json=true) {
+export const buildOpt = (method, host, json=true) => {
     const options = {
         method: method,
         uri: host,
@@ -23,13 +22,13 @@ module.exports.buildOpt = function (method, host, json=true) {
         form: undefined,
         json: json,
         maxAttempts: 5,
-        retryStrategy: request.RetryStrategies.HTTPOrNetworkError
+        retryStrategy: Request.RetryStrategies.HTTPOrNetworkError
     };
 
     return options
 }
 
-module.exports.buildAuthObj = function () {
+export const buildAuthObj = function () {
     return {
         grant_type: 'client_credentials',
         client_id: manifest.vendor.id,
@@ -37,7 +36,7 @@ module.exports.buildAuthObj = function () {
     }
 }
 
-module.exports.buildTextObj = function (text, token) {
+export const buildTextObj = (text, token) => {
     return {
         tex  : text.toString('utf8'),
         lan  : 'zh',
@@ -49,7 +48,7 @@ module.exports.buildTextObj = function (text, token) {
 }
 
 // session, appid are required
-module.exports.buildDiagObj = function() {
+export const buildDiagObj = () => {
     return {
         q: undefined,
         session: undefined,
@@ -61,8 +60,8 @@ module.exports.buildDiagObj = function() {
     }
 }
 
-module.exports.buildVoiceObj = function (filename, format, rate, token) {
-    const buffer = utils.getFileInBuffer(filename); // return buffer in bytes
+export const buildVoiceObj = (filename, format, rate, token) => {
+    const buffer = getFileInBuffer(filename); // return buffer in bytes
 
     return {
         channel: 1,
@@ -76,8 +75,8 @@ module.exports.buildVoiceObj = function (filename, format, rate, token) {
 }
 
 
-module.exports.sendCallback = function (sid, binary, callbackURL, callback) {
-    let options = this.buildOpt('POST', callbackURL)  
+export const sendCallback = (sid, binary, callbackURL, callback) => {
+    let options = buildOpt('POST', callbackURL)  
 
     // Avoiding some package parse to utf-8
     options.body = { 
