@@ -3,8 +3,8 @@ export const verifyBody = (req, res, next) => {
     req.appid = req.body.appid || req.query.appid;
     req.user = req.body.user || {};
 
-    req.robotId = req.body.bot_id;
-    req.reportDate = req.body.report_date;
+    req.robotId = req.body.botid;
+    req.reportDate = req.body.reportDate;
     req.condition = req.body.condition;
 
     // payment payload
@@ -27,7 +27,7 @@ export const verifyBody = (req, res, next) => {
             if (!robotId || !reportDate || !condition) {
                 return res.json({ success: false, message: 'parameters is not completed, please check api document.' });
             }
-            if (!user.id || !user.name || !user.car_id) {
+            if (!user.id || !user.name || !user.carid) {
                 return res.json({ success: false, message: 'user payload is not completed.' });
             }
             if (!payment.date || !payment.TCI || !payment.VCI) {

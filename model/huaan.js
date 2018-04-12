@@ -8,7 +8,7 @@ export const buildHuaanPayload = (msg) => {
     payload.ReportDate = msg.reportDate;
     // user
     payload.IDNo = msg.user.id;
-    payload.CarNo = msg.user.car_id;
+    payload.CarNo = msg.user.carid;
     payload.PersonName = msg.user.name;
     // accident
     payload.AccExp = msg.user.accident.name;

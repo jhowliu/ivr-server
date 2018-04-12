@@ -21,8 +21,8 @@ app.post('/greeting', verifyBody, (req, res) => {
     const sid = req.sid;
     const appid = req.appid;
     const user = req.user;
-    const robotId = req.bot_id;
-    const reportDate = req.report_date;
+    const robotId = req.robotId;
+    const reportDate = req.reportDate;
     const condition = req.condition;
 
     talk({ appid, sid, user, condition, robotId, reportDate })
@@ -37,13 +37,17 @@ app.post('/greeting', verifyBody, (req, res) => {
 app.post('/talk', (req, res) => {
     const sid  = req.body.sid || req.query.sid;
     const text = req.body.text || req.query.text;
+    const appid = req.body.appid;
 
     if (!text || !sid) {
         return res.json({ success: false, message: 'some parameters no given'});
     }
+    if (!appid) {
+        return res.json({ success: false, message: 'appid no given.' });
+    }
 
     // send the text to dialogue api
-    talk({ text, sid })
+    talk({ appid, sid, text })
         .then( reply => {
             return res.json({ success: true, sid: sid, data: reply });
         }).catch( reply => {
