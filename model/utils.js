@@ -1,51 +1,47 @@
-const path = require('path');
-const fs = require('fs');
+import fs from 'fs';
+import path from 'path';
 
-let spawn = require('child_process').spawn;
+import ChildProcessPromise from 'child-process-es6-promise';
 
-
-module.exports.generateRandomString = function () {
-    return (Math.random() * new Date().getTime()).toString(32).replace( /\./g , '');
+export const generateRandomString = () => {
+  return (Math.random() * new Date().getTime()).toString(32).replace(/\./g, '');
 }
 
 // Use for voice recognize 
 // Read audio from local
-module.exports.getFileInBuffer = function (filename, folder='./audio') {
-    const file = path.resolve(folder, filename);
-    const buf = fs.readFileSync(file);
-    console.log(buf.length);
+export const getFileInBuffer = (filename, folder = './audio') => {
+  const file = path.resolve(folder, filename);
+  const buf = fs.readFileSync(file);
+  console.log(buf.length);
 
-    return buf;
+  return buf;
 }
 
 
 // Write audio into local
-module.exports.writeAudio = function (buffer, filename, callback) {
-    const file = path.resolve('./audio', filename);
+export const constwriteAudio = (buffer, filename, callback) => {
+  const file = path.resolve('./audio', filename);
 
-    fs.writeFile(file, buffer,function(err) {
-        if (err) throw err; 
-        callback()
-    });
+  fs.writeFile(file, buffer, function (err) {
+    if (err) throw err;
+    callback()
+  });
 }
 
-module.exports.convertAudio = function (filename, rate, callback) {
-    const cmd = '/usr/bin/ffmpeg'
+export const convertAudio = function (filename, rate, callback) {
+  const cmd = '/usr/bin/ffmpeg'
 
-    const args = [
-        '-y',
-        '-i', path.resolve('./audio', filename),
-        '-acodec', 'pcm_s16le',
-        //'-f', 's16le',
-        '-ac', '1',
-        '-ar', '8000',
-        path.resolve('./audio', filename)
-   ]
+  const args = [
+    '-y',
+    '-i', path.resolve('./audio', filename),
+    '-acodec', 'pcm_s16le',
+    //'-f', 's16le',
+    '-ac', '1',
+    '-ar', '8000',
+    path.resolve('./audio', filename)
+  ]
 
-    let proc = spawn(cmd, args);
-
-    proc.on('close', function() {
-        console.log('finished');
-        callback();
-    })
+  ChildProcessPromise.spawn(cmd, args)
+    .then(() => console.log('finished'))
+    .catch(err => console.log(err.toString()));
 }
