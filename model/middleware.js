@@ -1,45 +1,89 @@
-export const verifyBody = (req, res, next) => {
-    req.sid = req.body.sid || req.query.sid;
-    req.appid = req.body.appid || req.query.appid;
-    req.user = req.body.user || {};
+export const VerifyBody = (req, res, next) => {
+  let err = {};
 
-    req.robotId = req.body.botid;
-    req.reportDate = req.body.reportDate;
-    req.condition = req.body.condition;
+  req, err = commonBodyCheck(req, res);
 
-    // payment payload
-    req.payment = req.user.payment || {};
-    // accident payload
-    req.accident = req.user.accident || {};
+  if (Object.keys(err).length) {
+    return res.json({
+      success: false,
+      message: err.message
+    })
+  }
 
-    if (!req.sid) {
-        return res.json({ success: false, message: 'session id no given.' });
-    }
+  switch (req.type) {
+    case 'huaan':
+      req, err = huaanBodyCheck(req, res);
+      break;
+    default:
+      break;
+  }
 
-    if (!req.appid) {
-        return res.json({ success: false, message: 'appid no given.' });
-    }
+  if (Object.keys(err).length) {
+    return res.json({
+      success: false,
+      message: err.message
+    })
+  }
 
-    switch (req.appid) {
-        case 'huaan':
-            const { robotId, reportDate, condition, user, payment, accident } = req;
+  next();
+}
 
-            if (!robotId || !reportDate || !condition) {
-                return res.json({ success: false, message: 'parameters is not completed, please check api document.' });
-            }
-            if (!user.id || !user.name || !user.carid) {
-                return res.json({ success: false, message: 'user payload is not completed.' });
-            }
-            if (!payment.date || !payment.TCI || !payment.VCI) {
-                return res.json({ success: false, message: 'payment payload is not completed.' });
-            }
-            if (!accident.date || !accident.place || !accident.name) {
-                return res.json({ success: false, message: 'accident payload is not completed.' });
-            }
-            break;
-        default:
-            break;
-    }
+const commonBodyCheck = (req, res) => {
+  const error = {};
+  req.sid = req.body.sid || req.query.sid;
+  req.appid = req.body.appid || req.query.appid;
+  req.text = req.body.text;
 
-    next();
+  const {
+    sid,
+    text,
+    appid
+  } = req;
+
+  if (!sid) {
+    error.message = 'session id no given.'
+  }
+  if (!appid) {
+    error.message = 'appid no given.'
+  }
+
+  req.type = (!text) ? appid : 'text';
+
+  return req, error;
+}
+
+const huaanBodyCheck = (req, res, next) => {
+  const error = {};
+  req.user = req.body.user || {};
+  req.robotId = req.body.botid;
+  req.reportDate = req.body.reportDate;
+  req.condition = req.body.condition;
+  // payment payload
+  req.payment = req.user.payment || {};
+  // accident payload
+  req.accident = req.user.accident || {};
+
+  const {
+    robotId,
+    reportDate,
+    condition,
+    user,
+    payment,
+    accident
+  } = req;
+
+  if (!robotId || !reportDate || !condition) {
+    error.message = 'parameters is not completed, please check api document.'
+  }
+  if (!user.id || !user.name || !user.carid) {
+    error.message = 'user payload is not completed.'
+  }
+  if (!payment.date || !payment.TCI || !payment.VCI) {
+    error.message = 'payment payload is not completed.'
+  }
+  if (!accident.date || !accident.place || !accident.name) {
+    error.message = 'accident payload is not completed.'
+  }
+
+  return req, error;
 }
