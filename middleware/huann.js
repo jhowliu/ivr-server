@@ -1,7 +1,7 @@
 export const huaanBodyCheck = (req, res, next) => {
   req.user = req.body.user || {};
-  req.robotId = req.body.botid;
-  req.reportDate = req.body.reportDate;
+  req.robotId = req.body.bot_id;
+  req.reportDate = req.body.report_date;
   req.condition = req.body.condition;
   // payment payload
   req.payment = req.user.payment || {};

@@ -26,13 +26,16 @@ export const Talk = (msg) => {
       if (res.statusCode === 404) {
         reject({ message: `The given appid: '${msg.appid}' has not found.`});
       }
+      if (res.statusCode === 500) {
+        reject({ message: '500 Interal error.' });
+      }
 
       if (body) {
         reply.state = body.dialogue_state;
         reply.text = body.dialogueReply;
         resolve({ data: reply });
       } else {
-        reject({ message: '500 Interal error.' });
+        reject({ message: 'something went wrong from dialogue api.' });
       }
     });
   });
