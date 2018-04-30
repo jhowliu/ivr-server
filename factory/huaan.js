@@ -1,16 +1,15 @@
-export const buildHuaanPayload = (msg) => {
-  const payload = {
-    q: msg.text,
-    session: msg.sid,
-    appid: msg.appid,
-  }
+import { buildCommonPayload } from './common';
 
-  payload.Q3Condition = msg.condition;
+export const buildHuaanPayload = (msg) => {
+  const payload = buildCommonPayload(msg);
+
   payload.OpNo = msg.robotId;
+  payload.Q3Condition = msg.condition;
   payload.ReportDate = msg.reportDate;
   // user
   payload.IDNo = msg.user.id;
-  payload.CarNo = msg.user.carid;
+  payload.CarNo = msg.user.car_id;
+  payload.Gender = msg.user.gender;
   payload.PersonName = msg.user.name;
   // accident
   payload.AccExp = msg.user.accident.name;

@@ -1,5 +1,5 @@
 import RequireDir from 'require-dir';
-import PayloadFactory from '../factory/payload';
+import PayloadFactory from '../factory';
 
 import {
   BuildOpt,
@@ -9,7 +9,7 @@ import {
 const manifest = RequireDir('../manifest');
 
 export const Talk = (msg) => {
-  const payload = PayloadFactory.createPayload(msg.appid, msg);
+  const payload = PayloadFactory.createPayload(msg);
   console.log(`Incoming Message:\n${JSON.stringify(payload, null, 4)}\n`);
 
   return new Promise((resolve, reject) => {

@@ -1,5 +1,3 @@
-export const buildRuitaiPayload = (msg) => ({
-  q: msg.text,
-  session: msg.sid,
-  appid: msg.appid,
-})
+import { buildCommonPayload } from './common';
+
+export const buildRuitaiPayload = (msg) => buildCommonPayload(msg);

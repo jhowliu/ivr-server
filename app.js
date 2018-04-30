@@ -10,7 +10,7 @@ import {
 } from './model/dialogue';
 import {
   VerifyBody
-} from './model/middleware';
+} from './middleware';
 
 const app = Express();
 const manifest = RequireDir(Path.resolve(process.argv[2]));
