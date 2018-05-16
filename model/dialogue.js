@@ -14,20 +14,20 @@ export const Talk = (msg) => {
 
   return new Promise((resolve, reject) => {
     if (!(msg.appid in manifest.vendor)) {
-      reject({ message: `The given appid: '${msg.appid}' has not found.`});
+      return reject({ message: `The given appid: '${msg.appid}' has not found.`});
     }
-    const options = BuildOpt('GET', manifest.vendor[msg.appid].host);
+    const options = BuildOpt('GET', manifest.services.dialogue.host);
     options.qs = payload;
-
+    console.log(JSON.stringify(options))
     InvokeApi(options, (res, body) => {
       let reply = buildReply();
       console.log(`Incoming Reply:\n${JSON.stringify(body, null, 4)}\n`);
 
       if (res.statusCode === 404) {
-        reject({ message: `The given appid: '${msg.appid}' has not found.`});
+        return reject({ message: `The given appid: '${msg.appid}' has not found.`});
       }
       if (res.statusCode === 500) {
-        reject({ message: '500 Interal error.' });
+        return reject({ message: '500 Interal error.' });
       }
 
       if (body) {
